@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a PDF from Form Content using html2pdf</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Style for centering the content in the PDF */
+        .pdf-content {
+            text-align: left; /* Align form content to the left */
+            width: 21cm; /* A4 width */
+            margin: 0; /* Remove margin */
+            padding-top: 20px; /* Remove padding */
+            padding-right: 50px;
+            padding-left: 20px;
+        }
+
+        /* Style for the company logo */
+        .company-logo {
+            max-width: 400px; /* Adjust the size as needed */
+            margin-bottom: 20px; /* Add some space between the logo and the form */
+        }
+
+        .flex-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .wrapper {
+            border: 1px solid #4b00ff;
+            border-right: 0;
+            margin-right: 10px;
+        }
+        canvas#signature-pad {
+            background: #fff;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        button#clear {
+            height: 100%;
+            background: #4b00ff;
+            border: 1px solid transparent;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button#clear span {
+            transform: rotate(90deg);
+            display: block;
+        }
+        textarea {
+            width: 70%;
+            height: 100px; /* Adjust the height as needed */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="center">
+        <form id="pdfForm" class="pdf-content">
+            <!-- Company logo -->
+            <img src="images/photo_5355127231275455862_y.jpg" alt="Company Logo" class="company-logo">
+            
+            <!-- Row 1: Checkboxes -->
+            <div class="flex-row">
+                <label for="Angebot">Angebot:</label>
+                <input type="checkbox" id="Angebot" name="Angebot" placeholder="">
+                
+                <label for="Auftrag">Auftrag:</label>
+                <input type="checkbox" id="Auftrag" name="Auftrag"  placeholder="">
+                
+                <label for="Rechnung">Rechnung:</label>
+                <input type="checkbox" id="Rechnung" name="" >
+                
+                <label for="Szczecin"></label>
+                <input type="text" id="Szczecin" name="Szczecin" placeholder="Szczecin:">
+            </div>
+            
+            <!-- Row 2: Nachname, Vorname -->
+            <div class="flex-row">
+                <label for="Nachname"></label>
+                <input type="text" id="Nachname" name="Nachname" placeholder="Nachname:">
+                
+                <label for="Vorname"></label>
+                <input type="text" id="Vorname" name="Vorname" placeholder="Vorname:">
+            </div>
+            
+            <!-- Row 3: Straße, Nr -->
+            <div class="flex-row">
+                <label for="Straße"></label>
+                <input type="text" id="Straße" name="Straße" placeholder="Straße:">
+                
+                <label for="Nr"></label>
+                <input type="text" id="Nr" name="Nr" placeholder="Nr:">
+            </div>
+            
+            <!-- Row 4: PLZ, Ort -->
+            <div class="flex-row">
+                <label for="PLZ"></label>
+                <input type="text" id="PLZ" name="PLZ" placeholder="PLZ:">
+                
+                <label for="Ort"></label>
+                <input type="text" id="Ort" name="Ort" placeholder="Ort:">
+            </div>
+            
+            <!-- Row 5: Handynummer -->
+            <div class="flex-row">
+                <label for="Handynummer"></label>
+                <input type="text" id="Handynummer" name="Handynummer" placeholder="Handynummer:">
+            </div>
+            
+            <!-- Row 6: Beschreibung -->
+            <div class="flex-row">
+                <label for="Beschreibung"></label>
+                <textarea id="Beschreibung" name="Beschreibung" placeholder="Beschreibung:"></textarea>
+            </div>
+            
+            <!-- Row 7: Gesamtpreis -->
+            <div class="flex-row">
+                <label for="Gesamtpreis"></label>
+                <input type="text" id="Gesamtpreis" name="Gesamtpreis" placeholder="Gesamtpreis:">
+            </div>
+            
+            <!-- Row 8: Vereinbarung, Datum, Ort, Unterschrift -->
+            <div class="flex-row">
+                <label for="Angebot1">Die umseitige Vereinbarung habe ich zur Kenntnis genommen und bin damit einverstanden, das zu dem vereinbarten Termin mit den Arbeiten begonnen werden soll und somit das Widerrufsrecht bei Fertigstellung erlischt::</label>
+                <input type="checkbox" id="Angebot1" name="Angebot1" >
+            </div>
+            <div class="flex-row">
+                <input type="date" placeholder="Datum:" />
+                <input type="text" id="Ort" name="Ort" placeholder="Ort">
+            </div>
+                
+            <!-- Signature pad -->
+            <div class="flex-row">
+                <div class="wrapper">
+                    <canvas id="signature-pad" width="400" height="200"></canvas>
+                </div>
+                <div class="clear-btn">
+                    <button id="clear"><span> Clear </span></button>
+                </div>
+            </div>
+
+            <!-- Button to generate PDF -->
+            <input type="button" value="Generate PDF" onclick="generatePdf()">
+        </form>
+    </div>
+
+    <script>
+        // Initialize signature pad
+        var canvas = document.getElementById('signature-pad');
+        var signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)' // set background color of signature pad
+        });
+
+        function generatePdf() {
+            // Get the signature data URL
+            var signatureData = signaturePad.toDataURL();
+
+            // Hide the signature pad before generating PDF
+            canvas.style.display = 'none';
+
+            // Clone the form
+            let formElement = document.getElementById('pdfForm').cloneNode(true);
+
+            // Remove the button from the cloned form
+            formElement.querySelector('input[type="button"]').remove();
+
+            // Remove the clear button from the cloned form
+            formElement.querySelector('.clear-btn').remove();
+
+            // Remove any existing signature image from the form
+            var existingSignature = formElement.querySelector('.signature-img');
+            if (existingSignature) {
+                existingSignature.remove();
+            }
+
+            // Create an image element for the signature
+            var signatureImg = document.createElement('img');
+            signatureImg.className = 'signature-img'; // Add class for identification
+            signatureImg.src = signatureData;
+
+            // Append the signature image to the form
+            formElement.appendChild(signatureImg);
+
+            // Generate PDF from the cloned form with A4 format
+            html2pdf().from(formElement).set({
+                filename: 'form.pdf', // Set filename
+                format: 'A4',
+                pagebreak: { mode: 'avoid-all' } // Avoid page breaks within content
+            }).save();
+
+            // Show the signature pad after generating PDF
+            canvas.style.display = 'block';
+        }
+
+        // Clear signature pad
+        document.getElementById("clear").addEventListener('click', function(){
+            signaturePad.clear(); // Clear signature pad
+
+            // Prevent form fields from being cleared
+            var formInputs = document.querySelectorAll('input[type="text"], input[type="tel"], textarea');
+            formInputs.forEach(input => {
+                input.value = ''; // Clear input values
+            });
+        });
+    </script>
+</body>
+
+</html>
