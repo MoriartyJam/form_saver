@@ -94,13 +94,18 @@
                 margin-bottom: 10px;
             }
             .flex-row {
-                margin-bottom: 5px;
+                flex-direction: column; /* Stack elements vertically on smaller screens */
+                margin-bottom: 15px; /* Increase margin between rows for better spacing */
             }
-            input[type="text"],
             input[type="checkbox"],
+            input[type="text"],
             textarea,
             input[type="date"] {
-                width: 100%;
+                width: calc(100% - 10px); /* Adjust width to accommodate margins */
+                margin-bottom: 5px; /* Add margin bottom for better spacing */
+            }
+            .wrapper {
+                margin-bottom: 10px; /* Add margin bottom for better spacing */
             }
         }
     </style>
@@ -110,6 +115,7 @@
     <div class="center">
         <form id="pdfForm" class="pdf-content">
             <!-- Company logo -->
+            <img src="images/photo_5355127231275455862_y.jpg" alt="Company Logo" class="company-logo">
 
             <!-- Row 1: Checkboxes -->
             <div class="flex-row">
