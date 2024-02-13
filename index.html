@@ -9,44 +9,57 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
         .center {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         /* Style for centering the content in the PDF */
         .pdf-content {
-            text-align: left; /* Align form content to the left */
-            width: 21cm; /* A4 width */
-            margin: 0; /* Remove margin */
-            padding-top: 20px; /* Remove padding */
-            padding-right: 50px;
-            padding-left: 20px;
+            max-width: 90%; /* Adjust the width as needed */
+            margin: 20px; /* Add some margin */
         }
 
         /* Style for the company logo */
         .company-logo {
-            max-width: 400px; /* Adjust the size as needed */
-            margin-bottom: 20px; /* Add some space between the logo and the form */
+            max-width: 100%;
+            margin-bottom: 20px;
         }
 
         .flex-row {
             display: flex;
+            flex-wrap: wrap;
             margin-bottom: 10px;
         }
+
+        .flex-row label,
+        .flex-row input,
+        .flex-row textarea {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
         .wrapper {
             border: 1px solid #4b00ff;
             border-right: 0;
             margin-right: 10px;
         }
+
         canvas#signature-pad {
             background: #fff;
             width: 100%;
-            height: 100%;
-            cursor: crosshair;
+            height: 200px; /* Adjust the height as needed */
+            touch-action: none; /* Disable touch action to prevent scrolling while signing */
         }
+
         button#clear {
             height: 100%;
             background: #4b00ff;
@@ -55,13 +68,39 @@
             font-weight: 600;
             cursor: pointer;
         }
+
         button#clear span {
             transform: rotate(90deg);
             display: block;
         }
+
         textarea {
-            width: 70%;
-            height: 100px; /* Adjust the height as needed */
+            width: 100%;
+            height: 100px;
+        }
+
+        input[type="button"] {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        @media screen and (max-width: 600px) {
+            .pdf-content {
+                padding: 10px;
+            }
+            .company-logo {
+                max-width: 100%;
+                margin-bottom: 10px;
+            }
+            .flex-row {
+                margin-bottom: 5px;
+            }
+            input[type="text"],
+            input[type="checkbox"],
+            textarea,
+            input[type="date"] {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -72,77 +111,76 @@
             <!-- Company logo -->
             <img src="images/photo_5355127231275455862_y.jpg" alt="Company Logo" class="company-logo">
 
-            
             <!-- Row 1: Checkboxes -->
             <div class="flex-row">
                 <label for="Angebot">Angebot:</label>
                 <input type="checkbox" id="Angebot" name="Angebot" placeholder="">
-                
+
                 <label for="Auftrag">Auftrag:</label>
-                <input type="checkbox" id="Auftrag" name="Auftrag"  placeholder="">
-                
+                <input type="checkbox" id="Auftrag" name="Auftrag" placeholder="">
+
                 <label for="Rechnung">Rechnung:</label>
-                <input type="checkbox" id="Rechnung" name="" >
-                
-                <label for="Szczecin"></label>
+                <input type="checkbox" id="Rechnung" name="Rechnung" placeholder="">
+
+                <label for="Szczecin">Szczecin:</label>
                 <input type="text" id="Szczecin" name="Szczecin" placeholder="Szczecin:">
             </div>
-            
+
             <!-- Row 2: Nachname, Vorname -->
             <div class="flex-row">
-                <label for="Nachname"></label>
+                <label for="Nachname">Nachname:</label>
                 <input type="text" id="Nachname" name="Nachname" placeholder="Nachname:">
-                
-                <label for="Vorname"></label>
+
+                <label for="Vorname">Vorname:</label>
                 <input type="text" id="Vorname" name="Vorname" placeholder="Vorname:">
             </div>
-            
+
             <!-- Row 3: Straße, Nr -->
             <div class="flex-row">
-                <label for="Straße"></label>
+                <label for="Straße">Straße:</label>
                 <input type="text" id="Straße" name="Straße" placeholder="Straße:">
-                
-                <label for="Nr"></label>
+
+                <label for="Nr">Nr:</label>
                 <input type="text" id="Nr" name="Nr" placeholder="Nr:">
             </div>
-            
+
             <!-- Row 4: PLZ, Ort -->
             <div class="flex-row">
-                <label for="PLZ"></label>
+                <label for="PLZ">PLZ:</label>
                 <input type="text" id="PLZ" name="PLZ" placeholder="PLZ:">
-                
-                <label for="Ort"></label>
+
+                <label for="Ort">Ort:</label>
                 <input type="text" id="Ort" name="Ort" placeholder="Ort:">
             </div>
-            
+
             <!-- Row 5: Handynummer -->
             <div class="flex-row">
-                <label for="Handynummer"></label>
+                <label for="Handynummer">Handynummer:</label>
                 <input type="text" id="Handynummer" name="Handynummer" placeholder="Handynummer:">
             </div>
-            
+
             <!-- Row 6: Beschreibung -->
             <div class="flex-row">
-                <label for="Beschreibung"></label>
+                <label for="Beschreibung">Beschreibung:</label>
                 <textarea id="Beschreibung" name="Beschreibung" placeholder="Beschreibung:"></textarea>
             </div>
-            
+
             <!-- Row 7: Gesamtpreis -->
             <div class="flex-row">
-                <label for="Gesamtpreis"></label>
+                <label for="Gesamtpreis">Gesamtpreis:</label>
                 <input type="text" id="Gesamtpreis" name="Gesamtpreis" placeholder="Gesamtpreis:">
             </div>
-            
+
             <!-- Row 8: Vereinbarung, Datum, Ort, Unterschrift -->
             <div class="flex-row">
                 <label for="Angebot1">Die umseitige Vereinbarung habe ich zur Kenntnis genommen und bin damit einverstanden, das zu dem vereinbarten Termin mit den Arbeiten begonnen werden soll und somit das Widerrufsrecht bei Fertigstellung erlischt::</label>
-                <input type="checkbox" id="Angebot1" name="Angebot1" >
+                <input type="checkbox" id="Angebot1" name="Angebot1">
             </div>
             <div class="flex-row">
-                <input type="date" placeholder="Datum:" />
+                <input type="date" placeholder="Datum:">
                 <input type="text" id="Ort" name="Ort" placeholder="Ort">
             </div>
-                
+
             <!-- Signature pad -->
             <div class="flex-row">
                 <div class="wrapper">
@@ -207,7 +245,7 @@
         }
 
         // Clear signature pad
-        document.getElementById("clear").addEventListener('click', function(){
+        document.getElementById("clear").addEventListener('click', function () {
             signaturePad.clear(); // Clear signature pad
 
             // Prevent form fields from being cleared
